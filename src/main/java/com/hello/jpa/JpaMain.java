@@ -9,10 +9,12 @@ public class JpaMain {
 
         EntityManager em = emf.createEntityManager();
 
-        JpaMain jpaMain = new JpaMain();
-
-        jpaMain.detachEntityManager(em);
-
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        transaction.commit();
+//        JpaMain jpaMain = new JpaMain();
+//
+//        jpaMain.detachEntityManager(em);
         emf.close();
     }
 
@@ -57,6 +59,7 @@ public class JpaMain {
 
         try {
             Member member = em.find(Member.class, 1L);
+
             member.setName("reNameA");
 
             transaction.commit();
