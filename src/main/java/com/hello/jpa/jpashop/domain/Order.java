@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-@Entity
+//@Entity
 @Table(name = "ORDERS")
 public class Order {
     @Id @GeneratedValue

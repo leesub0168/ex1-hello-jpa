@@ -1,5 +1,8 @@
 package com.hello.jpa;
 
+import com.hello.jpa.team.Team;
+import com.hello.jpa.team.TeamMember;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -9,15 +12,41 @@ public class JpaMain {
 
         EntityManager em = emf.createEntityManager();
 
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        transaction.commit();
 //        JpaMain jpaMain = new JpaMain();
 //
 //        jpaMain.detachEntityManager(em);
         emf.close();
     }
+    public void TeamMember(EntityManager em) {
 
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
+
+            TeamMember member = new TeamMember();
+            member.setName("member1");
+            member.setTeam(team);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            TeamMember findMember = em.find(TeamMember.class, member.getId());
+
+            Team findTeam = findMember.getTeam();
+
+            System.out.println("findTeam = " + findTeam.getName());
+
+            transaction.commit();
+        }catch (Exception e) {
+            transaction.rollback();
+        }finally {
+            em.close();
+        }
+    }
     public void createMember(EntityManager em) {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
