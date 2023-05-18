@@ -17,8 +17,8 @@ public class JpaMain {
 
         emf.close();
     }
-    public void TeamMember(EntityManager em) {
 
+    public void TeamMember(EntityManager em) {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
         try {
