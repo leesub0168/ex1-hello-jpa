@@ -12,9 +12,9 @@ public class JpaMain {
 
         EntityManager em = emf.createEntityManager();
 
-//        JpaMain jpaMain = new JpaMain();
-//
-//        jpaMain.detachEntityManager(em);
+        JpaMain jpaMain = new JpaMain();
+        jpaMain.TeamMember(em);
+
         emf.close();
     }
     public void TeamMember(EntityManager em) {
@@ -36,9 +36,12 @@ public class JpaMain {
 
             TeamMember findMember = em.find(TeamMember.class, member.getId());
 
-            Team findTeam = findMember.getTeam();
 
-            System.out.println("findTeam = " + findTeam.getName());
+            List<TeamMember> teamMembers = findMember.getTeam().getMembers();
+
+            for (TeamMember m : teamMembers) {
+                System.out.println("members = " + m.getName());
+            }
 
             transaction.commit();
         }catch (Exception e) {
