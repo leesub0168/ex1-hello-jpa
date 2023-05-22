@@ -5,7 +5,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 //@Entity
-@Table // 매핑해야할 테이블의 이름과 다른경우 @Table에 name을 세팅해주면 됨.
+//@Table // 매핑해야할 테이블의 이름과 다른경우 @Table에 name을 세팅해주면 됨.
 public class Member {
     @Id
     private Long id;

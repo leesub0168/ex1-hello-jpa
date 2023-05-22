@@ -12,8 +12,8 @@ public class JpaMain {
 
         EntityManager em = emf.createEntityManager();
 
-        JpaMain jpaMain = new JpaMain();
-        jpaMain.TeamMember(em);
+//        JpaMain jpaMain = new JpaMain();
+//        jpaMain.TeamMember(em);
 
         emf.close();
     }
