@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+//@Entity
 public class Item {
     @Id @GeneratedValue
     @Column(name = "ITEM_ID")

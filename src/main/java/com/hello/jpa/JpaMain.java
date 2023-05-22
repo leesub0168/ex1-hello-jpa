@@ -1,5 +1,6 @@
 package com.hello.jpa;
 
+import com.hello.jpa.extendsMapping.Movie;
 import com.hello.jpa.team.Team;
 import com.hello.jpa.team.TeamMember;
 
@@ -12,10 +13,34 @@ public class JpaMain {
 
         EntityManager em = emf.createEntityManager();
 
-//        JpaMain jpaMain = new JpaMain();
-//        jpaMain.TeamMember(em);
+        JpaMain jpaMain = new JpaMain();
+        jpaMain.extendsMapping(em);
 
         emf.close();
+    }
+
+    public void extendsMapping(EntityManager em) {
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            Movie movie = new Movie();
+            movie.setName("어벤저스");
+            movie.setActor("aaa");
+            movie.setDirector("bbbb");
+
+            em.persist(movie);
+
+            em.flush();
+            em.clear();
+
+            Movie movie1 = em.find(Movie.class, movie.getId());
+            System.out.println("findMovie = " + movie1.getName());
+            transaction.commit();
+        }catch (Exception e) {
+            transaction.rollback();
+        }finally {
+            em.close();
+        }
     }
 
     public void TeamMember(EntityManager em) {

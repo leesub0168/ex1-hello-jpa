@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "ORDERS")
+//@Entity
+//@Table(name = "ORDERS")
 public class Order {
     @Id @GeneratedValue
     @Column(name = "ORDER_ID")
