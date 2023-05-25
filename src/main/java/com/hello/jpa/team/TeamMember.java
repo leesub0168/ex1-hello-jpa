@@ -4,22 +4,21 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Entity
-public class TeamMember {
+@Entity
+public class TeamMember extends BaseEntity {
     @Id @GeneratedValue
-    @Column(name = "MEMBER_ID")
     private Long id;
 
     @Column(name = "USER_NAME")
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "TEAM_ID")
+    @JoinColumn(name = "team_id")
     private Team team;
 
-    @OneToOne
-    @JoinColumn(name = "LOCKER_ID")
-    private Locker locker;
+//    @OneToOne
+//    @JoinColumn(name = "LOCKER_ID")
+//    private Locker locker;
 
     public Long getId() {
         return id;

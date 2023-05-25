@@ -1,17 +1,19 @@
 package com.hello.jpa.jpashop.domain;
 
+import com.hello.jpa.team.BaseEntity;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Entity
-public class Item {
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public abstract class Item extends BaseEntity {
     @Id @GeneratedValue
     @Column(name = "ITEM_ID")
     private Long id;
 
     private String name;
-
     private int price;
     private int stockQuantity;
 
@@ -32,5 +34,29 @@ public class Item {
 
     public int getStockQuantity() {
         return stockQuantity;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public void setStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }

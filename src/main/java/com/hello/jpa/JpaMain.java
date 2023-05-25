@@ -5,6 +5,7 @@ import com.hello.jpa.team.Team;
 import com.hello.jpa.team.TeamMember;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class JpaMain {
@@ -54,19 +55,37 @@ public class JpaMain {
             TeamMember member = new TeamMember();
             member.setName("member1");
             member.setTeam(team);
+            member.setCreatedBy("lee");
+            member.setCreatedDate(LocalDateTime.now());
             em.persist(member);
+
+            TeamMember member2 = new TeamMember();
+            member2.setName("member2");
+            member2.setTeam(team);
+            em.persist(member2);
+
+
+            System.out.println("#####################");
+            for (TeamMember m : team.getMembers()) {
+                System.out.println("members = " + m.getName());
+            }
+            System.out.println("#####################");
+
+//            team.getMembers().add(member2);
 //
-//            em.flush();
-//            em.clear();
+            em.flush();
+            em.clear();
 //
-//            TeamMember findMember = em.find(TeamMember.class, member.getId());
+            TeamMember findMember = em.find(TeamMember.class, member.getId());
 //
 //
-//            List<TeamMember> teamMembers = findMember.getTeam().getMembers();
+            List<TeamMember> teamMembers = findMember.getTeam().getMembers();
 //
-//            for (TeamMember m : teamMembers) {
-//                System.out.println("members = " + m.getName());
-//            }
+            System.out.println("@@@@@@@@@@@@@@@@@@@@");
+            for (TeamMember m : teamMembers) {
+                System.out.println("members = " + m.getName());
+            }
+            System.out.println("@@@@@@@@@@@@@@@@@@@@");
 
             transaction.commit();
         }catch (Exception e) {
