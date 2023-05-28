@@ -11,11 +11,11 @@ import java.util.List;
 public class JpaMain {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
-
+        PersistenceUnitUtil persistenceUnitUtil = emf.getPersistenceUnitUtil();
         EntityManager em = emf.createEntityManager();
 
         JpaMain jpaMain = new JpaMain();
-        jpaMain.extendsMapping(em);
+        jpaMain.lazyLoading(em);
 
         emf.close();
     }
@@ -52,6 +52,7 @@ public class JpaMain {
             team.setName("TeamA");
             em.persist(team);
 
+
             TeamMember member = new TeamMember();
             member.setName("member1");
             member.setTeam(team);
@@ -59,33 +60,9 @@ public class JpaMain {
             member.setCreatedDate(LocalDateTime.now());
             em.persist(member);
 
-            TeamMember member2 = new TeamMember();
-            member2.setName("member2");
-            member2.setTeam(team);
-            em.persist(member2);
-
-
-            System.out.println("#####################");
-            for (TeamMember m : team.getMembers()) {
-                System.out.println("members = " + m.getName());
-            }
-            System.out.println("#####################");
-
-//            team.getMembers().add(member2);
-//
             em.flush();
             em.clear();
-//
-            TeamMember findMember = em.find(TeamMember.class, member.getId());
-//
-//
-            List<TeamMember> teamMembers = findMember.getTeam().getMembers();
-//
-            System.out.println("@@@@@@@@@@@@@@@@@@@@");
-            for (TeamMember m : teamMembers) {
-                System.out.println("members = " + m.getName());
-            }
-            System.out.println("@@@@@@@@@@@@@@@@@@@@");
+
 
             transaction.commit();
         }catch (Exception e) {
@@ -94,6 +71,102 @@ public class JpaMain {
             em.close();
         }
     }
+
+    public void proxy(EntityManager em, PersistenceUnitUtil persistenceUnitUtil) {
+
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
+
+            TeamMember member = new TeamMember();
+            member.setName("member1");
+            member.setTeam(team);
+            member.setCreatedBy("lee");
+            member.setCreatedDate(LocalDateTime.now());
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            TeamMember refMember = em.getReference(TeamMember.class, member.getId());
+            // getReference -> 실제 엔티티가 아닌 프록시 객체를 전달해줌.
+            // 프록시 객체로 일단 준 후, 실제로 어떤값을 사용하거나 하면 쿼리를 날려 DB를 조회하고 엔티티와 프록시 객체를 연결시킴
+
+            // 프록시 객체가 실제로 로딩이 되었는지 확인하는 메소드
+            System.out.println(persistenceUnitUtil.isLoaded(refMember));
+
+            TeamMember findMember = em.find(TeamMember.class, member.getId());
+            System.out.println("##########################################");
+            System.out.println("findMember = " + findMember.getClass());
+            System.out.println("refMember = " + refMember.getClass());
+            System.out.println("refMember = " + refMember.getName());
+            System.out.println("##########################################");
+            System.out.println(persistenceUnitUtil.isLoaded(refMember));
+            // 이렇게 하면 실제 find를 했지만 findMember도 프록시 객체가 전달되어 있음.
+            // 이는 findMember 와 refMember의 동등 비교를 보장하기 위해서 그런 것.
+
+
+            em.flush();
+            em.clear();
+
+            transaction.commit();
+        }catch (Exception e) {
+            transaction.rollback();
+            e.printStackTrace();
+        }finally {
+            em.close();
+        }
+    }
+
+    public void lazyLoading(EntityManager em) {
+
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
+
+            Team team1 = new Team();
+            team1.setName("TeamB");
+            em.persist(team1);
+
+            TeamMember member = new TeamMember();
+            member.setName("member1");
+            member.setTeam(team);
+            member.setCreatedBy("lee");
+            member.setCreatedDate(LocalDateTime.now());
+            em.persist(member);
+
+            TeamMember member1 = new TeamMember();
+            member1.setName("member2");
+            member1.setTeam(team1);
+            em.persist(member1);
+
+            em.flush();
+            em.clear();
+
+            // 즉시로딩인 상태에서, JPQL을 이렇게 작성하면, TeamMember 가져오고 + 각 TeamMember Team을 조회하는 쿼리가 추가적으로 더 나가게됨 ==> N+1
+//            List<TeamMember> members = em.createQuery("select m from TeamMember m", TeamMember.class).getResultList();
+
+            // fetch join을 사용하여 미리 가져올 값을 선택해주면, 미리 조인해서 가져오기 때문에 N+1을 막을 수 있다.
+            List<TeamMember> members = em.createQuery("select m from TeamMember m join fetch m.team", TeamMember.class).getResultList();
+
+            for (TeamMember teamMember : members) {
+                System.out.println("############# " + teamMember.getTeam().getName());
+            }
+
+            transaction.commit();
+        }catch (Exception e) {
+            transaction.rollback();
+        }finally {
+            em.close();
+        }
+    }
+
     public void createMember(EntityManager em) {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
@@ -168,12 +241,12 @@ public class JpaMain {
         transaction.begin();
 
         try {
-            List<Member> members = em.createQuery("select m from Member as m where m.name like 'Hello%'", Member.class)
+            List<TeamMember> members = em.createQuery("select m from TeamMember as m where m.name like 'Hello%'", TeamMember.class)
 //                    .setFirstResult(5) // 페이징 활용
 //                    .setMaxResults(10)
                     .getResultList();
 
-            for (Member member : members) {
+            for (TeamMember member : members) {
                 System.out.println(member.getName());
             }
             transaction.commit();

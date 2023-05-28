@@ -13,7 +13,7 @@ public class Order {
     @Column(name = "ORDER_ID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
@@ -23,7 +23,7 @@ public class Order {
     // 실무 레벨에서는 개발의 편의성을 위해서 양방향을 이용하는 경우도 많음.
     // 하지만 최대한 연관 관계를 끊어내서 단방향으로 설계하는 것을 추천
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DELIVERY_ID")
     private Delivery delivery;
 
