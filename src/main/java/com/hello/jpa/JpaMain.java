@@ -1,6 +1,9 @@
 package com.hello.jpa;
 
+import com.hello.jpa.cascade.Child;
+import com.hello.jpa.cascade.Parent;
 import com.hello.jpa.extendsMapping.Movie;
+import com.hello.jpa.jpashop.domain.Member;
 import com.hello.jpa.team.Team;
 import com.hello.jpa.team.TeamMember;
 
@@ -15,11 +18,39 @@ public class JpaMain {
         EntityManager em = emf.createEntityManager();
 
         JpaMain jpaMain = new JpaMain();
-        jpaMain.lazyLoading(em);
+        jpaMain.cascadeTest(em);
 
         emf.close();
     }
 
+    public void cascadeTest(EntityManager em) {
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            Child child1 = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+
+            em.flush();
+            em.clear();
+
+            Parent findParent = em.find(Parent.class, parent.getId());
+//            findParent.getChildList().remove(0);
+
+            em.remove(findParent);
+
+            transaction.commit();
+        }catch (Exception e) {
+            transaction.rollback();
+        }finally {
+            em.close();
+        }
+    }
     public void extendsMapping(EntityManager em) {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
@@ -262,8 +293,8 @@ public class JpaMain {
         transaction.begin();
 
         try {
-            Member member1 = new Member(152L, "152L");
-            Member member2 = new Member(162L, "162L");
+            Member member1 = new Member();
+            Member member2 = new Member();
 
             // 플러쉬 모드를 세팅할 수 있음.
 //            em.setFlushMode(FlushModeType.AUTO); // 트랜잭션 커밋이나, 쿼리를 실행할때 flush (기본세팅값)
