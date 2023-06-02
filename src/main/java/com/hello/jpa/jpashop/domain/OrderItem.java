@@ -17,7 +17,6 @@ public class OrderItem {
     private Item item;
 
     private int orderPrice;
-
     private int count;
 
     public Long getId() {
@@ -38,5 +37,25 @@ public class OrderItem {
 
     public int getCount() {
         return count;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    public void setOrderPrice(int orderPrice) {
+        this.orderPrice = orderPrice;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }
