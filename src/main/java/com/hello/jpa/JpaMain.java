@@ -3,7 +3,9 @@ package com.hello.jpa;
 import com.hello.jpa.cascade.Child;
 import com.hello.jpa.cascade.Parent;
 import com.hello.jpa.extendsMapping.Movie;
+import com.hello.jpa.jpashop.domain.Address;
 import com.hello.jpa.jpashop.domain.Member;
+import com.hello.jpa.jpashop.domain.Period;
 import com.hello.jpa.team.Team;
 import com.hello.jpa.team.TeamMember;
 
@@ -18,10 +20,34 @@ public class JpaMain {
         EntityManager em = emf.createEntityManager();
 
         JpaMain jpaMain = new JpaMain();
-        jpaMain.cascadeTest(em);
+        jpaMain.valueType(em);
 
         emf.close();
     }
+
+    public void valueType(EntityManager em) {
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            Member member = new Member();
+            Period period = new Period(LocalDateTime.now(), LocalDateTime.now());
+            Address address = new Address("seoul", "gangnam", "235236");
+
+            member.setName("test");
+            member.setHome_address(address);
+            member.setPeriod(period);
+
+            em.persist(member);
+
+            transaction.commit();
+        }catch (Exception e) {
+            transaction.rollback();
+        }finally {
+            em.close();
+        }
+
+    }
+
 
     public void cascadeTest(EntityManager em) {
         EntityTransaction transaction = em.getTransaction();

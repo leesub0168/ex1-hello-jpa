@@ -20,7 +20,19 @@ public class Member {
     private Period period;
 
     @Embedded
-    private Address address;
+    private Address home_address;
+
+    /**
+     * 같은 값 타입을 중복으로 사용해야할 때는
+     * @AttributeOverrides로 컬럼명을 따로 표기해주면 사용가능
+     * */
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "city", column = @Column(name = "work_city")),
+            @AttributeOverride(name = "street", column = @Column(name = "work_street")),
+            @AttributeOverride(name = "zipcode", column = @Column(name = "wokr_zipcode"))
+    })
+    private Address work_address;
 
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
@@ -49,12 +61,20 @@ public class Member {
         this.period = period;
     }
 
-    public Address getAddress() {
-        return address;
+    public Address getHome_address() {
+        return home_address;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setHome_address(Address home_address) {
+        this.home_address = home_address;
+    }
+
+    public Address getWork_address() {
+        return work_address;
+    }
+
+    public void setWork_address(Address work_address) {
+        this.work_address = work_address;
     }
 
     public List<Order> getOrders() {
