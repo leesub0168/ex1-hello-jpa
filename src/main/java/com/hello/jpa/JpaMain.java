@@ -29,15 +29,24 @@ public class JpaMain {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
         try {
-            Member member = new Member();
-            Period period = new Period(LocalDateTime.now(), LocalDateTime.now());
             Address address = new Address("seoul", "gangnam", "235236");
+            Period period = new Period(LocalDateTime.now(), LocalDateTime.now());
 
-            member.setName("test");
+            Member member = new Member();
+            member.setName("member1");
             member.setHome_address(address);
             member.setPeriod(period);
-
             em.persist(member);
+
+            Address address1 = new Address("busan", address.getStreet(), address.getZipcode());
+
+            Member member1 = new Member();
+            member1.setName("member2");
+            member1.setHome_address(address1);
+            member1.setPeriod(period);
+            em.persist(member1);
+
+//            member.getHome_address().setCity("busan") // 이렇게 하면 member1, member2 모두 업데이트 되버림;
 
             transaction.commit();
         }catch (Exception e) {

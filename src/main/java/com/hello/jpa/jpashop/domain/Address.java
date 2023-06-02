@@ -17,27 +17,20 @@ public class Address {
         this.zipcode = zipcode;
     }
 
+    /**
+     * 값 타입은 불변 객체로 만드는 것이 좋음.
+     * 생성자만 제공하고 setter는 제공 X
+     * */
+
     public String getCity() {
         return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
     }
 
     public String getStreet() {
         return street;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
     public String getZipcode() {
         return zipcode;
-    }
-
-    public void setZipcode(String zipcode) {
-        this.zipcode = zipcode;
     }
 }
