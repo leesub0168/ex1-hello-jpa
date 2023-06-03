@@ -4,6 +4,7 @@ import com.hello.jpa.cascade.Child;
 import com.hello.jpa.cascade.Parent;
 import com.hello.jpa.extendsMapping.Movie;
 import com.hello.jpa.jpashop.domain.Address;
+import com.hello.jpa.jpashop.domain.AddressEntity;
 import com.hello.jpa.jpashop.domain.Member;
 import com.hello.jpa.jpashop.domain.Period;
 import com.hello.jpa.team.Team;
@@ -20,9 +21,65 @@ public class JpaMain {
         EntityManager em = emf.createEntityManager();
 
         JpaMain jpaMain = new JpaMain();
-        jpaMain.valueType(em);
+        jpaMain.valueTypeCollection(em);
 
         emf.close();
+    }
+
+    public void valueTypeCollection(EntityManager em) {
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            Member member = new Member();
+            member.setName("member1");
+            member.setHome_address(new Address("seoul", "street", "121253"));
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("족발");
+            member.getFavoriteFoods().add("피자");
+
+            member.getAddressHistory().add(new AddressEntity("busan", "street", "265325"));
+            member.getAddressHistory().add(new AddressEntity("jeju", "street", "345632"));
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            System.out.println("#######################################");
+            Member findMember = em.find(Member.class, member.getId());
+            /**
+             * 값 타입을 변경하면 사이드 이펙트가 생길 가능성이 높다.
+             * 그러므로 값 타입을 수정 하지말고 새로운 객체를 생성해서 set 해야함.
+             * */
+//            findMember.getHome_address().setCity("newCity");
+//            Address adr = findMember.getHome_address();
+//            findMember.setHome_address(new Address("newCity", adr.getStreet(), adr.getZipcode()));
+//
+//            findMember.getFavoriteFoods().remove("치킨");
+//            findMember.getFavoriteFoods().add("한식");
+
+            /**
+             * remove할 객체를 찾을때 equals 메소드를 기반으로 비교하기 때문에
+             * equals 메소드의 동등비교 기준을 확인해서 삭제할 객체를 전달해야한다.
+             *
+             * 값 타입은 엔티티와 다르게 식별자의 개념이 없기 때문에 값이 변경되면 추적이 어려움.
+             * 그래서 값 타입 컬렉션에 변경 사항이 발생하면 주인 엔티티와 연관된 모든 데이터를 삭제하고,
+             * 값 타입 컬렉션에 있는 현재 값을 모두 다시 저장한다.
+             * --> 따라서 비효율적. 값 타입 컬렉션 사용은 추천하지 않음.
+             *     값 타입 컬렉션 대신에 일대다 관계 사용을 권장함
+             * */
+//            findMember.getAddressHistory().remove(new AddressEntity("busan", "street", "265325"));
+//            findMember.getAddressHistory().add(new AddressEntity("new-busan", "street", "265325"));
+            findMember.getAddressHistory().remove(0);
+
+            transaction.commit();
+        }catch (Exception e) {
+            transaction.rollback();
+        }finally {
+            em.close();
+        }
+
     }
 
     public void valueType(EntityManager em) {
