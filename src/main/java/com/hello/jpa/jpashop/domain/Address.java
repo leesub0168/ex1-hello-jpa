@@ -1,12 +1,16 @@
 package com.hello.jpa.jpashop.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
 public class Address {
+    @Column(length = 10)
     private String city;
+    @Column(length = 20)
     private String street;
+    @Column(length = 5)
     private String zipcode;
 
     public Address() {
@@ -33,6 +37,14 @@ public class Address {
 
     public String getZipcode() {
         return zipcode;
+    }
+
+    /**
+     * 값 타입을 사용하면 이런 비즈니스 메서드를 내부에 정의해서
+     * 사용할 수 있음.
+     * */
+    public String getFullAddress() {
+        return getCity() + " " + getStreet() + " " + getZipcode();
     }
 
     @Override
